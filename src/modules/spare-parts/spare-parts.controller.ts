@@ -20,8 +20,12 @@ export class SparePartsController {
     status: 409,
     description: 'Spare part with this code already exists',
   })
-  create(@Body() createSparePartDto: CreateSparePartDto) {
-    return this.sparePartsService.create(createSparePartDto);
+  async create(@Body() createSparePartDto: CreateSparePartDto) {
+    const data = await this.sparePartsService.create(createSparePartDto);
+    return {
+      message: 'Spare part created successfully',
+      data,
+    };
   }
 
   @Get()

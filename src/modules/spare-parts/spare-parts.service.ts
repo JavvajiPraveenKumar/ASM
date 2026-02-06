@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SparePart } from './entities/spare-part.entity';
@@ -19,37 +19,49 @@ export class SparePartsService {
   ) { }
 
   async create(createSparePartDto: CreateSparePartDto) {
-    const { categoryId, supplierId, partCode } = createSparePartDto;
+    try {
+      const { categoryId, supplierId, partCode } = createSparePartDto;
 
-    // Validate Category
-    const category = await this.categoryRepository.findOne({
-      where: { id: categoryId },
-    });
-    if (!category) {
-      throw new NotFoundException(`Category with ID ${categoryId} not found`);
-    }
+      // Validate Category
+      const category = await this.categoryRepository.findOne({
+        where: { id: categoryId },
+      });
+      if (!category) {
+        throw new NotFoundException(`Category with ID ${categoryId} not found`);
+      }
 
-    // Validate Supplier
-    const supplier = await this.supplierRepository.findOne({
-      where: { id: supplierId },
-    });
-    if (!supplier) {
-      throw new NotFoundException(`Supplier with ID ${supplierId} not found`);
-    }
+      // Validate Supplier
+      const supplier = await this.supplierRepository.findOne({
+        where: { id: supplierId },
+      });
+      if (!supplier) {
+        throw new NotFoundException(`Supplier with ID ${supplierId} not found`);
+      }
 
-    // Validate Duplicate Part Code
-    const existingPart = await this.sparePartsRepository.findOne({
-      where: { partCode },
-    });
+      // Validate Duplicate Part Code
+      const existingPart = await this.sparePartsRepository.findOne({
+        where: { partCode },
+      });
 
-    if (existingPart) {
-      throw new ConflictException(
-        `Spare part with code ${partCode} already exists`,
+      if (existingPart) {
+        throw new ConflictException(
+          `Spare part with code ${partCode} already exists`,
+        );
+      }
+
+      const newPart = this.sparePartsRepository.create(createSparePartDto);
+      return await this.sparePartsRepository.save(newPart);
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create spare part: ${error.message}`,
       );
     }
-
-    const newPart = this.sparePartsRepository.create(createSparePartDto);
-    return await this.sparePartsRepository.save(newPart);
   }
 
   findAll() {
