@@ -1,8 +1,10 @@
+import { SparePart } from 'src/modules/spare-parts/entities/spare-part.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('suppliers')
@@ -21,5 +23,8 @@ export class Supplier {
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
+
+  @OneToMany(()=>SparePart,(spareparts)=>spareparts.supplier)
+  spareParts:SparePart[];
 }
 

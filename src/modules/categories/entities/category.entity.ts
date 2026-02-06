@@ -1,4 +1,5 @@
 
+import { SparePart } from 'src/modules/spare-parts/entities/spare-part.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('categories')
@@ -22,4 +24,7 @@ export class Category {
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp', })
   createdAt: Date;
+  //Relations
+  @OneToMany(() => SparePart, (sparePart) => sparePart.category)
+  spareParts: SparePart[];
 }

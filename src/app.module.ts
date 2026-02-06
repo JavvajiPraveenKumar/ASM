@@ -8,6 +8,7 @@ import { UserModule } from './modules/user/user.module';
 import { CatagoriesModule } from './modules/categories/categories.module';
 import { Supplier } from './modules/suppliers/entities/supplier.entity';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
+import { SparePartsModule } from './modules/spare-parts/spare-parts.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { SuppliersModule } from './modules/suppliers/suppliers.module';
     TypeOrmModule.forRoot(databaseConfig()),
     UserModule,
     CatagoriesModule,
-    SuppliersModule
+    SuppliersModule,
+    SparePartsModule
   ],
   controllers: [AppController],
   providers: [AppService],
