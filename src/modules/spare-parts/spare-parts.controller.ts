@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { SparePartsService } from './spare-parts.service';
 import { CreateSparePartDto } from './dto/create-spare-part.dto';
 import { UpdateSparePartDto } from './dto/update-spare-part.dto';
+import { PageOptionsDto } from '../../common/dto/page-options.dto';
+import { PageDto } from '../../common/dto/page.dto';
+import { SparePart } from './entities/spare-part.entity';
 
 @Controller('spare-parts')
 @ApiTags('Spare Parts')
@@ -21,16 +24,18 @@ export class SparePartsController {
     description: 'Spare part with this code already exists',
   })
   async create(@Body() createSparePartDto: CreateSparePartDto) {
-    const data = await this.sparePartsService.create(createSparePartDto);
+    const data = await this.sparePartsService.createSparePart(createSparePartDto);
     return {
       message: 'Spare part created successfully',
       data,
     };
   }
 
+
   @Get()
-  findAll() {
-    return this.sparePartsService.findAll();
+  @ApiOperation({ summary: 'Get spare parts with pagination' })
+  async findAll(@Query() pageOptionsDto: PageOptionsDto): Promise<PageDto<SparePart>> {
+    return this.sparePartsService.getPaginatedSpareParts(pageOptionsDto);
   }
 
   @Get(':id')

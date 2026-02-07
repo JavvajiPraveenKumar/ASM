@@ -6,9 +6,15 @@ import { Category } from '../categories/entities/category.entity';
 import { Supplier } from '../suppliers/entities/supplier.entity';
 import { CreateSparePartDto } from './dto/create-spare-part.dto';
 import { UpdateSparePartDto } from './dto/update-spare-part.dto';
+import { PageOptionsDto } from '../../common/dto/page-options.dto';
+import { PageDto } from '../../common/dto/page.dto';
+import { PageMetaDto } from '../../common/dto/page-meta.dto';
+
+
 
 @Injectable()
 export class SparePartsService {
+
   constructor(
     @InjectRepository(SparePart)
     private readonly sparePartsRepository: Repository<SparePart>,
@@ -18,7 +24,7 @@ export class SparePartsService {
     private readonly supplierRepository: Repository<Supplier>,
   ) { }
 
-  async create(createSparePartDto: CreateSparePartDto) {
+  async createSparePart(createSparePartDto: CreateSparePartDto) {
     try {
       const { categoryId, supplierId, partCode } = createSparePartDto;
 
@@ -64,8 +70,22 @@ export class SparePartsService {
     }
   }
 
-  findAll() {
-    return this.sparePartsRepository.find();
+
+
+  async getPaginatedSpareParts(pageOptionsDto: PageOptionsDto): Promise<PageDto<SparePart>> {
+    const queryBuilder = this.sparePartsRepository.createQueryBuilder('sparePart');
+    
+    queryBuilder
+      .orderBy('sparePart.createdAt', pageOptionsDto.order)
+      .skip(pageOptionsDto.skip)
+      .take(pageOptionsDto.take);
+
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(entities, pageMetaDto);
   }
 
   findOne(id: number) {
