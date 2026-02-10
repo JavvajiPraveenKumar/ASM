@@ -1,12 +1,12 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { SparePart } from './entities/spare-part.entity';
 import { Category } from '../categories/entities/category.entity';
 import { Supplier } from '../suppliers/entities/supplier.entity';
 import { CreateSparePartDto } from './dto/create-spare-part.dto';
 import { UpdateSparePartDto } from './dto/update-spare-part.dto';
-import { PageOptionsDto } from '../../common/dto/page-options.dto';
+import { SparePartsPageOptionsDto } from './dto/spare-parts-page-options.dto';
 import { PageDto } from '../../common/dto/page.dto';
 import { PageMetaDto } from '../../common/dto/page-meta.dto';
 
@@ -14,6 +14,8 @@ import { PageMetaDto } from '../../common/dto/page-meta.dto';
 
 @Injectable()
 export class SparePartsService {
+  private readonly logger = new Logger(SparePartsService.name);
+
 
   constructor(
     @InjectRepository(SparePart)
@@ -72,21 +74,94 @@ export class SparePartsService {
 
 
 
-  async getPaginatedSpareParts(pageOptionsDto: PageOptionsDto): Promise<PageDto<SparePart>> {
-    const queryBuilder = this.sparePartsRepository.createQueryBuilder('sparePart');
-    
-    queryBuilder
-      .orderBy('sparePart.createdAt', pageOptionsDto.order)
-      .skip(pageOptionsDto.skip)
-      .take(pageOptionsDto.take);
+  async getPaginatedSpareParts(
+    pageOptionsDto: SparePartsPageOptionsDto,
+  ): Promise<PageDto<SparePart>> {
+    try {
+      const queryBuilder =
+        this.sparePartsRepository.createQueryBuilder('sparePart');
 
-    const itemCount = await queryBuilder.getCount();
-    const { entities } = await queryBuilder.getRawAndEntities();
+      queryBuilder.select([
+        'sparePart.id',
+        'sparePart.partCode',
+        'sparePart.partName',
+        'sparePart.vehicleBrand',
+        'sparePart.vehicleModel',
+        'sparePart.sellingPrice',
+        'sparePart.currentStock',
+        'sparePart.isActive',
+        'sparePart.createdAt',
+      ]);
 
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+      if (pageOptionsDto.vehicleBrand) {
+        queryBuilder.andWhere('sparePart.vehicleBrand = :vehicleBrand', {
+          vehicleBrand: pageOptionsDto.vehicleBrand,
+        });
+      }
 
-    return new PageDto(entities, pageMetaDto);
+      if (pageOptionsDto.vehicleModel) {
+        queryBuilder.andWhere('sparePart.vehicleModel = :vehicleModel', {
+          vehicleModel: pageOptionsDto.vehicleModel,
+        });
+      }
+
+      if (pageOptionsDto.vehicleType) {
+        queryBuilder.andWhere('sparePart.vehicleType = :vehicleType', {
+          vehicleType: pageOptionsDto.vehicleType,
+        });
+      }
+
+      if (pageOptionsDto.categoryId) {
+        queryBuilder.andWhere('sparePart.categoryId = :categoryId', {
+          categoryId: pageOptionsDto.categoryId,
+        });
+      }
+
+      if (pageOptionsDto.supplierId) {
+        queryBuilder.andWhere('sparePart.supplierId = :supplierId', {
+          supplierId: pageOptionsDto.supplierId,
+        });
+      }
+
+      if (pageOptionsDto.isActive !== undefined) {
+        queryBuilder.andWhere('sparePart.isActive = :isActive', {
+          isActive: pageOptionsDto.isActive,
+        });
+      }
+
+      if (pageOptionsDto.search) {
+        queryBuilder.andWhere(
+          new Brackets((qb) => {
+            qb.where('sparePart.partName LIKE :search', {
+              search: `%${pageOptionsDto.search}%`,
+            }).orWhere('sparePart.partCode LIKE :search', {
+              search: `%${pageOptionsDto.search}%`,
+            });
+          }),
+        );
+      }
+
+      queryBuilder
+        .orderBy('sparePart.createdAt', pageOptionsDto.order)
+        .skip(pageOptionsDto.skip)
+        .take(pageOptionsDto.take);
+
+      const itemCount = await queryBuilder.getCount();
+      const { entities } = await queryBuilder.getRawAndEntities();
+
+      const pageMetaDto = new PageMetaDto({
+        itemCount,
+        pageOptionsDto,
+      });
+
+      return new PageDto(entities, pageMetaDto);
+    } catch (error) {
+      this.logger.error('Error fetching the Spare-parts', error.stack);
+      throw new InternalServerErrorException('Failed to fetch spare parts');
+    }
   }
+
+
 
   findOne(id: number) {
     return this.sparePartsRepository.findOne({ where: { id } });

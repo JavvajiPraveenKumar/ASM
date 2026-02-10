@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiBody, ApiResponse, ApiQuery } from '@nestjs/s
 import { SparePartsService } from './spare-parts.service';
 import { CreateSparePartDto } from './dto/create-spare-part.dto';
 import { UpdateSparePartDto } from './dto/update-spare-part.dto';
-import { PageOptionsDto } from '../../common/dto/page-options.dto';
+import { SparePartsPageOptionsDto } from './dto/spare-parts-page-options.dto';
 import { PageDto } from '../../common/dto/page.dto';
 import { SparePart } from './entities/spare-part.entity';
 
@@ -34,7 +34,7 @@ export class SparePartsController {
 
   @Get()
   @ApiOperation({ summary: 'Get spare parts with pagination' })
-  async findAll(@Query() pageOptionsDto: PageOptionsDto): Promise<PageDto<SparePart>> {
+  async findAll(@Query() pageOptionsDto: SparePartsPageOptionsDto): Promise<PageDto<SparePart>> {
     return this.sparePartsService.getPaginatedSpareParts(pageOptionsDto);
   }
 
