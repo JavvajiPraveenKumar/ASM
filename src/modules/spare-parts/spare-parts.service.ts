@@ -163,7 +163,7 @@ export class SparePartsService {
 
 
 
-  findOne(id: number) {
+ async GetSparePart(id: number) {
     return this.sparePartsRepository.findOne({ where: { id } });
   }
 

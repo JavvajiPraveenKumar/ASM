@@ -9,6 +9,7 @@ import { CatagoriesModule } from './modules/categories/categories.module';
 import { Supplier } from './modules/suppliers/entities/supplier.entity';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { SparePartsModule } from './modules/spare-parts/spare-parts.module';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { SparePartsModule } from './modules/spare-parts/spare-parts.module';
     UserModule,
     CatagoriesModule,
     SuppliersModule,
-    SparePartsModule
+    SparePartsModule,
+    CustomersModule
   ],
   controllers: [AppController],
   providers: [AppService],

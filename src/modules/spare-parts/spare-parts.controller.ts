@@ -40,7 +40,7 @@ export class SparePartsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sparePartsService.findOne(+id);
+    return this.sparePartsService.GetSparePart(+id);
   }
 
   @Patch(':id')
