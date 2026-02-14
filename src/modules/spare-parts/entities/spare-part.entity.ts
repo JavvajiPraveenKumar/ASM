@@ -1,4 +1,5 @@
 import { Category } from 'src/modules/categories/entities/category.entity';
+import { InventoryTransaction } from 'src/modules/inventory-transactions/entities/inventory-transaction.entity';
 import { Supplier } from 'src/modules/suppliers/entities/supplier.entity';
 import {
   Entity,
@@ -9,6 +10,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany
 } from 'typeorm';
 
 @Entity({ name: 'spare_parts'})
@@ -97,6 +99,12 @@ category: Category;
 @ManyToOne(()=>Supplier,(supplier)=>supplier.spareParts)
 @JoinColumn({name:'supplier_id'})
 supplier:Supplier
+
+@OneToMany(
+  () => InventoryTransaction,
+  (inventoryTransaction) => inventoryTransaction.sparePart,
+)
+inventoryTransactions: InventoryTransaction[];
 
 }
 

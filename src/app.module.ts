@@ -6,10 +6,9 @@ import { AppService } from './app.service';
 import { databaseConfig } from './config/database.config';
 import { UserModule } from './modules/user/user.module';
 import { CatagoriesModule } from './modules/categories/categories.module';
-import { Supplier } from './modules/suppliers/entities/supplier.entity';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { SparePartsModule } from './modules/spare-parts/spare-parts.module';
-import { CustomersModule } from './customers/customers.module';
+import { CustomersModule } from './modules/customers/customers.module';
 
 @Module({
   imports: [
@@ -19,7 +18,8 @@ import { CustomersModule } from './customers/customers.module';
     CatagoriesModule,
     SuppliersModule,
     SparePartsModule,
-    CustomersModule
+    CustomersModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],
