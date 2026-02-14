@@ -1,6 +1,7 @@
 import { Customer } from 'src/modules/customers/entities/customer.entity';
 import { Payment } from 'src/modules/payments/entities/payment.entity';
 import { SaleItem } from '../entities/sale_items.entity';
+import { MechanicCommission } from 'src/modules/mechanics/entities/mechanic_commisions.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -50,6 +51,12 @@ payments: Payment[];
 
 @OneToMany(() => SaleItem, (saleItem) => saleItem.sale)
 saleItems: SaleItem[];
+
+@OneToMany(
+  () => MechanicCommission,
+  (commission) => commission.sale,
+)
+mechanicCommissions: MechanicCommission[];
 
 }
 

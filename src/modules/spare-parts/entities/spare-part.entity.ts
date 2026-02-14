@@ -1,6 +1,7 @@
 import { Category } from 'src/modules/categories/entities/category.entity';
 import { InventoryTransaction } from 'src/modules/inventory-transactions/entities/inventory-transaction.entity';
 import { Supplier } from 'src/modules/suppliers/entities/supplier.entity';
+import { SaleItem } from 'src/modules/sales/entities/sale_items.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -105,6 +106,9 @@ supplier:Supplier
   (inventoryTransaction) => inventoryTransaction.sparePart,
 )
 inventoryTransactions: InventoryTransaction[];
+
+@OneToMany(() => SaleItem, (saleItem) => saleItem.sparePart)
+saleItems: SaleItem[];
 
 }
 
