@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { InventoryTransaction } from './entities/inventory-transaction.entity';
 import { InventoryTransactionsService } from './inventory-transactions.service';
 import { InventoryTransactionsController } from './inventory-transactions.controller';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([InventoryTransaction])],
   controllers: [InventoryTransactionsController],
   providers: [InventoryTransactionsService],
 })
-export class InventoryTransactionsModule {}
+export class InventoryTransactionsModule { }
