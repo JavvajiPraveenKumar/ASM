@@ -79,7 +79,7 @@ export class SalesService {
           spare_part_id: item.spare_part_id,
           quantity: item.quantity,
           selling_price: item.selling_price,
-          // total: item.quantity * item.selling_price, // If total column exists in SaleItem, usually calculated
+          total_price: item.quantity * item.selling_price, // If total column exists in SaleItem, usually calculated
         });
         await queryRunner.manager.save(saleItem);
 
@@ -97,7 +97,7 @@ export class SalesService {
             InventoryTransaction,
             {
               spare_part_id: item.spare_part_id,
-              type: 'OUT', // Or 'SALE' depending on your enum/string
+              type:"SALE", // Or 'SALE' depending on your enum/string
               quantity: item.quantity,
               reference_type: 'Sales',
               reference_id: savedSale.id,

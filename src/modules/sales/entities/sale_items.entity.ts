@@ -25,6 +25,9 @@ export class SaleItem {
   @Column({ type: 'numeric', precision: 12, scale: 2 })
   selling_price: number;
 
+  @Column({ type: 'numeric', precision: 12, scale: 2 })
+  total_price: number;
+
   @ManyToOne(() => Sale, (sale) => sale.saleItems)
   @JoinColumn({ name: 'sale_id' })
   sale: Sale;
