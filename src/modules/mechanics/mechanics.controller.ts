@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { MechanicsService } from './mechanics.service';
 import { CreateMechanicDto } from './dto/create-mechanic.dto';
 import { UpdateMechanicDto } from './dto/update-mechanic.dto';
+import { MechanicsPageOptionsDto } from './dto/mechanics-page-options.dto';
+import { PageDto } from '../../common/dto/page.dto';
+import { Mechanic } from './entities/mechanic.entity';
 
 @ApiTags('Mechanics')
 @Controller('mechanics')
@@ -18,10 +21,10 @@ export class MechanicsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all mechanics' })
-  @ApiResponse({ status: 200, description: 'Mechanics fetched successfully' })
-  findAll() {
-    return this.mechanicsService.findAll();
+  @ApiOperation({ summary: 'Get all mechanics with pagination' })
+  @ApiResponse({ status: 200, description: 'Mechanics fetched successfully', type: PageDto<Mechanic> })
+  findAll(@Query() pageOptionsDto: MechanicsPageOptionsDto) {
+    return this.mechanicsService.getPaginatedMechanics(pageOptionsDto);
   }
 
   @Get(':id')
