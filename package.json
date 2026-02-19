@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "migration:generate": "typeorm migration:generate src/migrations/migration -d dist/database/data-source.js",
+    "migration:generate": "typeorm migration:generate -d dist/database/data-source.js",
     "migration:run": "typeorm migration:run -d dist/database/data-source.js",
     "migration:revert": "typeorm migration:revert -d dist/database/data-source.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
