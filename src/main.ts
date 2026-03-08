@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,13 +15,20 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-   app.useGlobalPipes(
+  app.useGlobalInterceptors(new ResponseInterceptor());
+
+  app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,          // removes extra fields
       forbidNonWhitelisted: true, // throws error for extra fields
       transform: true,           // auto-transform payloads to DTOs
     }),
   );
+  app.enableCors({
+    origin: 'http://localhost:8080',
+    credentials: true,
+  });
+
 
   await app.listen(process.env.PORT ?? 3000);
 }
