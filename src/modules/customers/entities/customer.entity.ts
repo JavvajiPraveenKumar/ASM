@@ -23,6 +23,14 @@ export class Customer {
   @Column({ type: 'text' })
   customer_address: string;
 
+   @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    default: 0
+  })
+  outstanding: number;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 }

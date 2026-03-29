@@ -22,6 +22,9 @@ async function bootstrap() {
       whitelist: true,          // removes extra fields
       forbidNonWhitelisted: true, // throws error for extra fields
       transform: true,           // auto-transform payloads to DTOs
+      transformOptions: {
+        enableImplicitConversion: true, // Auto-converts string numbers to integers/floats
+      },
     }),
   );
   app.enableCors({

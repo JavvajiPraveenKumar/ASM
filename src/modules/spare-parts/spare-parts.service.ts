@@ -81,10 +81,14 @@ export class SparePartsService {
       const queryBuilder =
         this.sparePartsRepository.createQueryBuilder('sparePart');
 
+      queryBuilder.leftJoin('sparePart.category', 'category');
+
       queryBuilder.select([
         'sparePart.id',
         'sparePart.partCode',
         'sparePart.partName',
+        'sparePart.categoryId',
+        'category.name',
         'sparePart.vehicleBrand',
         'sparePart.vehicleModel',
         'sparePart.sellingPrice',
@@ -163,12 +167,45 @@ export class SparePartsService {
 
 
 
- async GetSparePart(id: number) {
+  async GetSparePart(id: number) {
     return this.sparePartsRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateSparePartDto: UpdateSparePartDto) {
-    return `This action updates a #${id} sparePart`;
+  async updateSparePart(id: number, updateSparePartDto: UpdateSparePartDto) {
+    const sparePart = await this.sparePartsRepository.findOne({
+      where: { id }
+    });
+
+    if (!sparePart) {
+      throw new NotFoundException(`Spare part with id ${id} not found`);
+    }
+
+    // remove fields that should not be updated
+    const { id: _, createdAt, updatedAt, ...dto } = updateSparePartDto as any;
+
+    const updateData: any = {};
+
+    for (const key in dto) {
+      if (dto[key] !== (sparePart as any)[key]) {
+        updateData[key] = dto[key];
+      }
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return { message: "No changes detected" };
+    }
+
+    await this.sparePartsRepository
+      .createQueryBuilder()
+      .update()
+      .set(updateData)
+      .where("id = :id", { id })
+      .execute();
+
+    return {
+      message: "Spare part updated successfully",
+      updatedFields: Object.keys(updateData)
+    };
   }
 
   remove(id: number) {

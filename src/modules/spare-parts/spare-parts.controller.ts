@@ -45,7 +45,7 @@ export class SparePartsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSparePartDto: UpdateSparePartDto) {
-    return this.sparePartsService.update(+id, updateSparePartDto);
+    return this.sparePartsService.updateSparePart(+id, updateSparePartDto);
   }
 
   @Delete(':id')
