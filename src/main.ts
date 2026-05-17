@@ -28,7 +28,11 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'http://localhost:8080',
+    
+   origin: [
+      'https://asm-frontend-beige.vercel.app', // Your production Vercel frontend
+      'http://localhost:8080',                  // Your local frontend
+    ],
     credentials: true,
   });
 
